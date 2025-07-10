@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Multitouch Sound Buttons</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 50px;
+      background: #f4f4f4;
+    }
+    button {
+      width: 200px;
+      height: 100px;
+      font-size: 20px;
+      margin: 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background-color: #4285f4;
+      color: white;
+    }
+    button:active {
+      background-color: #3367d6;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Multitouch Sound Player</h1>
+  <button id="btn1">Play Sound 1</button>
+  <button id="btn2">Play Sound 2</button>
+
+  <script>
+    // Preload audio files
+    const sound1 = new Audio('507.mp3');
+    const sound2 = new Audio('4507.mp3');
+
+    // Enable multiple simultaneous playback
+    sound1.preload = 'auto';
+    sound2.preload = 'auto';
+
+    // Clone and play a sound to allow overlapping play
+    function playSound(audio) {
+      const clone = audio.cloneNode();
+      clone.play();
+    }
+
+    const btn1 = document.getElementById('btn1');
+    const btn2 = document.getElementById('btn2');
+
+    // Mouse and single touch support
+    btn1.addEventListener('click', () => playSound(sound1));
+    btn2.addEventListener('click', () => playSound(sound2));
+
+    // Multitouch support
+    btn1.addEventListener('touchstart', e => {
+      e.preventDefault();
+      playSound(sound1);
+    }, { passive: false });
+
+    btn2.addEventListener('touchstart', e => {
+      e.preventDefault();
+      playSound(sound2);
+    }, { passive: false });
+  </script>
+</body>
+</html>
