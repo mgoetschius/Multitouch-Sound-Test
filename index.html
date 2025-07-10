@@ -2,6 +2,96 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <title>Low Latency Sound Buttons</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding-top: 50px;
+      background: #f0f0f0;
+    }
+    button {
+      width: 200px;
+      height: 100px;
+      font-size: 20px;
+      margin: 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background-color: #28a745;
+      color: white;
+    }
+    button:active {
+      background-color: #218838;
+    }
+  </style>
+</head>
+<body>
+  <h1>Low Latency Sound Player</h1>
+  <button id="btn1">Play Sound 1</button>
+  <button id="btn2">Play Sound 2</button>
+
+  <script>
+    const context = new (window.AudioContext || window.webkitAudioContext)();
+    let buffer1 = null;
+    let buffer2 = null;
+
+    // Load MP3 files as audio buffers
+    function loadSound(url) {
+      return fetch(url)
+        .then(response => response.arrayBuffer())
+        .then(data => context.decodeAudioData(data));
+    }
+
+    Promise.all([
+      loadSound('snare.wav'),
+      loadSound('kick3.wav')
+    ]).then(buffers => {
+      buffer1 = buffers[0];
+      buffer2 = buffers[1];
+    });
+
+    // Play sound from buffer
+    function playBuffer(buffer) {
+      const source = context.createBufferSource();
+      source.buffer = buffer;
+      source.connect(context.destination);
+      source.start(0);
+    }
+
+    // Resume audio context on first interaction
+    function resumeIfNeeded() {
+      if (context.state === 'suspended') {
+        context.resume();
+      }
+    }
+
+    const btn1 = document.getElementById('btn1');
+    const btn2 = document.getElementById('btn2');
+
+    const play1 = (e) => {
+      e.preventDefault();
+      resumeIfNeeded();
+      if (buffer1) playBuffer(buffer1);
+    };
+
+    const play2 = (e) => {
+      e.preventDefault();
+      resumeIfNeeded();
+      if (buffer2) playBuffer(buffer2);
+    };
+
+    // Touch and click support with low latency
+    btn1.addEventListener('touchstart', play1, { passive: false });
+    btn2.addEventListener('touchstart', play2, { passive: false });
+    btn1.addEventListener('click', play1);
+    btn2.addEventListener('click', play2);
+  </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
   <title>Multitouch Sound Buttons</title>
   <style>
     body {
